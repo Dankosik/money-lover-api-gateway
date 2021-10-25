@@ -1,2 +1,0 @@
-# money-lover-api-gateway
-
