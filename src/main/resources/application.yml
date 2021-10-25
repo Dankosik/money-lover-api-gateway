@@ -1,0 +1,33 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: money-lover-api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: money-lover-operation-service
+          uri: lb://MONEY-LOVER-OPERATION-SERVICE
+          predicates:
+            - Path=/api/v1/operations/**
+          filters:
+            - name: Retry
+              args:
+                exceptions: io.netty.channel.AbstractChannel$AnnotatedConnectException
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 10000ms
+        - id: money-lover-wallet-service
+          uri: lb://MONEY-LOVER-WALLET-SERVICE
+          predicates:
+            - Path=/api/v1/wallets/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+    loadbalancer:
+      retry:
+        enabled: true
+eureka:
+  instance:
+    prefer-ip-address: true
